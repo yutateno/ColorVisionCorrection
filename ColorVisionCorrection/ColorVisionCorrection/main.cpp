@@ -1,18 +1,17 @@
 #include "DxLib.h"
 
-const int XSize = 1600;
-const int YSize = 1069;
+int XSize = 2048;
+int YSize = 2048;
 
-int RGBA[XSize][YSize][4];			// 元なるRGBをピクセル単位で取得
-double XYZ[XSize][YSize][3];		// RGBからXYZに変換したもの
-double PXYZ[XSize][YSize][3];		// LMSから直接P型異常のXYZに変換
-double DXYZ[XSize][YSize][3];		// LMSから直接D型異常のXYZに変換
-double LMS[XSize][YSize][3];		// XYZからLMSに変換したもの
-double PLMS[XSize][YSize][3];		// LMSからP型異常に変換したもの
-double DLMS[XSize][YSize][3];		// LMSからD型異常に変換したもの
-int DRGB[XSize][YSize][3];			// DXYZからRGBに変換したもの
-int PRGB[XSize][YSize][3];			// PLMSからRGBに変換したもの
-int c[3];						// 白黒に生成するためのもので、RGBを一瞬保持するための仮置き
+int RGBA[2048][2048][4];			// 元なるRGBをピクセル単位で取得
+double XYZ[2048][2048][3];		// RGBからXYZに変換したもの
+double PXYZ[2048][2048][3];		// LMSから直接P型異常のXYZに変換
+double DXYZ[2048][2048][3];		// LMSから直接D型異常のXYZに変換
+double LMS[2048][2048][3];		// XYZからLMSに変換したもの
+double PLMS[2048][2048][3];		// LMSからP型異常に変換したもの
+double DLMS[2048][2048][3];		// LMSからD型異常に変換したもの
+int DRGB[2048][2048][3];			// DXYZからRGBに変換したもの
+int PRGB[2048][2048][3];			// PLMSからRGBに変換したもの
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
@@ -25,7 +24,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	SetFontSize(64);
 
+	SetAlwaysRunFlag(true);
+	
+	int tmp[3];						// 白黒に生成するためのもので、RGBを一瞬保持するための仮置き
+
 	int handle = LoadSoftImage("KZ18610P1030833_TP_V.jpg");
+
+	GetSoftImageSize(handle, &XSize, &YSize);
 	
 	for (int x = 0; x < XSize; ++x)
 	{
@@ -117,10 +122,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		}
 	}
 
+	int count = 0;
+
 	while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) != 1)
 	{
+		count++;
 		// 通常
-		if (CheckHitKey(KEY_INPUT_C) == 1)
+		if (count <= 60)
 		{
 			for (int x = 0; x < XSize; ++x)
 			{
@@ -128,15 +136,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 				{
 					for (int i = 0; i < 3; ++i)
 					{
-						c[i] = RGBA[x][y][i];
+						tmp[i] = RGBA[x][y][i];
 					}
-					DrawPixel(x, y, GetColor(c[0], c[1], c[2]));
+					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
 				}
 			}
-			DrawFormatString(0, 0, GetColor(255, 255, 255), "通常");
+			//DrawFormatString(0, 0, GetColor(255, 255, 255), "通常");
+			if (count == 50) SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\normal.jpg");
 		}
-
-		if (CheckHitKey(KEY_INPUT_B) == 1)
+		else if (count <= 120)
 		{
 			for (int x = 0; x < XSize; ++x)
 			{
@@ -144,15 +152,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 				{
 					for (int i = 0; i < 3; ++i)
 					{
-						c[i] = DRGB[x][y][i];
+						tmp[i] = DRGB[x][y][i];
 					}
-					DrawPixel(x, y, GetColor(c[0], c[1], c[2]));
+					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
 				}
 			}
-			DrawFormatString(0, 0, GetColor(255, 255, 255), "D型色覚");
+			//DrawFormatString(0, 0, GetColor(255, 255, 255), "D型色覚");
+			if (count == 100) SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\D.jpg");
 		}
-
-		if (CheckHitKey(KEY_INPUT_D) == 1)
+		else if (count <= 180)
 		{
 			for (int x = 0; x < XSize; ++x)
 			{
@@ -160,28 +168,29 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 				{
 					for (int i = 0; i < 3; ++i)
 					{
-						c[i] = PRGB[x][y][i];
+						tmp[i] = PRGB[x][y][i];
 					}
-					DrawPixel(x, y, GetColor(c[0], c[1], c[2]));
+					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
 				}
 			}
-			DrawFormatString(0, 0, GetColor(255, 255, 255), "P型色覚");
+			//DrawFormatString(0, 0, GetColor(255, 255, 255), "P型色覚");
+			if (count == 150) SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\P.jpg");
 		}
-
-		if (CheckHitKey(KEY_INPUT_A) == 1)
+		else if (count <= 240)
 		{
 			for (int x = 0; x < XSize; ++x)
 			{
 				for (int y = 0; y < YSize; ++y)
 				{
-					c[0] = (int)(RGBA[x][y][0] * 0.299 + RGBA[x][y][1] * 0.587 + RGBA[x][y][2] * 0.114);
-					c[1] = c[2] = c[0];
-					DrawPixel(x, y, GetColor(c[0], c[1], c[2]));
+					tmp[0] = (int)(RGBA[x][y][0] * 0.299 + RGBA[x][y][1] * 0.587 + RGBA[x][y][2] * 0.114);
+					tmp[1] = tmp[2] = tmp[0];
+					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
 				}
 			}
-			DrawFormatString(0, 0, GetColor(255, 255, 255), "白黒");
+			//DrawFormatString(0, 0, GetColor(255, 255, 255), "白黒");
+			if (count == 200) SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\whiteblack.jpg");
 		}
-
+		else break;
 	}
 
 	DxLib_End();
