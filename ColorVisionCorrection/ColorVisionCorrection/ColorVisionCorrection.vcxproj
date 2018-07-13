@@ -152,6 +152,7 @@
     <ClCompile Include="ColorCorrection.cpp" />
     <ClCompile Include="FileSearchCreate.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mainLabor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorCorrection.hpp" />

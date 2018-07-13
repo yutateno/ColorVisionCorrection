@@ -1,3 +1,14 @@
+ï»¿/*
+Project Name    : ColorVisionCorrection
+File Name		: main.cpp
+Creation Date   : 2018/07/13
+
+Copyright Â© 2018 yutateno. All rights reserved.
+
+This source code or any portion thereof must not be
+reproduced or used in any manner whatsoever.
+*/
+
 #include "DxLib.h"
 #include "ColorCorrection.hpp"
 #include "FileSearchCreate.hpp"
@@ -5,15 +16,15 @@
 int XSize = 2048;
 int YSize = 2048;
 
-int RGBA[2048][2048][4];			// Œ³‚È‚éRGB‚ğƒsƒNƒZƒ‹’PˆÊ‚Åæ“¾
-double XYZ[2048][2048][3];		// RGB‚©‚çXYZ‚É•ÏŠ·‚µ‚½‚à‚Ì
-double PXYZ[2048][2048][3];		// LMS‚©‚ç’¼ÚPŒ^ˆÙí‚ÌXYZ‚É•ÏŠ·
-double DXYZ[2048][2048][3];		// LMS‚©‚ç’¼ÚDŒ^ˆÙí‚ÌXYZ‚É•ÏŠ·
-double LMS[2048][2048][3];		// XYZ‚©‚çLMS‚É•ÏŠ·‚µ‚½‚à‚Ì
-double PLMS[2048][2048][3];		// LMS‚©‚çPŒ^ˆÙí‚É•ÏŠ·‚µ‚½‚à‚Ì
-double DLMS[2048][2048][3];		// LMS‚©‚çDŒ^ˆÙí‚É•ÏŠ·‚µ‚½‚à‚Ì
-int DRGB[2048][2048][3];			// DXYZ‚©‚çRGB‚É•ÏŠ·‚µ‚½‚à‚Ì
-int PRGB[2048][2048][3];			// PLMS‚©‚çRGB‚É•ÏŠ·‚µ‚½‚à‚Ì
+int RGBA[2048][2048][4];			// å…ƒãªã‚‹RGBã‚’ãƒ”ã‚¯ã‚»ãƒ«å˜ä½ã§å–å¾—
+double XYZ[2048][2048][3];		// RGBã‹ã‚‰XYZã«å¤‰æ›ã—ãŸã‚‚ã®
+double PXYZ[2048][2048][3];		// LMSã‹ã‚‰ç›´æ¥På‹ç•°å¸¸ã®XYZã«å¤‰æ›
+double DXYZ[2048][2048][3];		// LMSã‹ã‚‰ç›´æ¥Då‹ç•°å¸¸ã®XYZã«å¤‰æ›
+double LMS[2048][2048][3];		// XYZã‹ã‚‰LMSã«å¤‰æ›ã—ãŸã‚‚ã®
+double PLMS[2048][2048][3];		// LMSã‹ã‚‰På‹ç•°å¸¸ã«å¤‰æ›ã—ãŸã‚‚ã®
+double DLMS[2048][2048][3];		// LMSã‹ã‚‰Då‹ç•°å¸¸ã«å¤‰æ›ã—ãŸã‚‚ã®
+int DRGB[2048][2048][3];			// DXYZã‹ã‚‰RGBã«å¤‰æ›ã—ãŸã‚‚ã®
+int PRGB[2048][2048][3];			// PLMSã‹ã‚‰RGBã«å¤‰æ›ã—ãŸã‚‚ã®
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
@@ -28,9 +39,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	SetAlwaysRunFlag(true);
 	
-	int tmp[3];						// ”’•‚É¶¬‚·‚é‚½‚ß‚Ì‚à‚Ì‚ÅARGB‚ğˆêu•Û‚·‚é‚½‚ß‚Ì‰¼’u‚«
+	int tmp[3];						// ç™½é»’ã«ç”Ÿæˆã™ã‚‹ãŸã‚ã®ã‚‚ã®ã§ã€RGBã‚’ä¸€ç¬ä¿æŒã™ã‚‹ãŸã‚ã®ä»®ç½®ã
 
-	int handle = LoadSoftImage("KZ18610P1030833_TP_V.jpg");
+	int handle = LoadSoftImage("Media.jpg");
 
 	GetSoftImageSize(handle, &XSize, &YSize);
 	
@@ -129,7 +140,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) != 1)
 	{
 		count++;
-		// ’Êí
+		// é€šå¸¸
 		if (count <= 60)
 		{
 			for (int x = 0; x < XSize; ++x)
@@ -143,7 +154,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
 				}
 			}
-			//DrawFormatString(0, 0, GetColor(255, 255, 255), "’Êí");
+			//DrawFormatString(0, 0, GetColor(255, 255, 255), "é€šå¸¸");
 			if (count == 50) SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\normal.jpg");
 		}
 		else if (count <= 120)
@@ -159,7 +170,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
 				}
 			}
-			//DrawFormatString(0, 0, GetColor(255, 255, 255), "DŒ^FŠo");
+			//DrawFormatString(0, 0, GetColor(255, 255, 255), "Då‹è‰²è¦š");
 			if (count == 100) SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\D.jpg");
 		}
 		else if (count <= 180)
@@ -175,7 +186,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
 				}
 			}
-			//DrawFormatString(0, 0, GetColor(255, 255, 255), "PŒ^FŠo");
+			//DrawFormatString(0, 0, GetColor(255, 255, 255), "På‹è‰²è¦š");
 			if (count == 150) SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\P.jpg");
 		}
 		else if (count <= 240)
@@ -189,7 +200,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
 				}
 			}
-			//DrawFormatString(0, 0, GetColor(255, 255, 255), "”’•");
+			//DrawFormatString(0, 0, GetColor(255, 255, 255), "ç™½é»’");
 			if (count == 200) SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\whiteblack.jpg");
 		}
 		else break;

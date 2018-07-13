@@ -1,3 +1,14 @@
+ï»¿/*
+Project Name    : ColorVisionCorrection
+File Name		: ColorCorrection.hpp
+Creation Date   : 2018/07/13
+
+Copyright Â© 2018 yutateno. All rights reserved.
+
+This source code or any portion thereof must not be
+reproduced or used in any manner whatsoever.
+*/
+
 #pragma once
 #include <vector>
 #include <string>
@@ -17,5 +28,5 @@ public:
 };
 
 /*
-‚±‚ÌƒNƒ‰ƒX‚ÍFileSearchCreate‚©‚ç“n‚³‚ê‚½‰æ‘œ–¼‚©‚çF‚ğ•Ï‚¦‚½‚Ì‚ğ‰æ‘œ–¼+Šg’£q‚ÌƒtƒHƒ‹ƒ_‚É•Û‘¶‚·‚é‚æ‚¤‚É‚·‚éB
+ã“ã®ã‚¯ãƒ©ã‚¹ã¯FileSearchCreateã‹ã‚‰æ¸¡ã•ã‚ŒãŸç”»åƒåã‹ã‚‰è‰²ã‚’å¤‰ãˆãŸã®ã‚’ç”»åƒå+æ‹¡å¼µå­ã®ãƒ•ã‚©ãƒ«ãƒ€ã«ä¿å­˜ã™ã‚‹ã‚ˆã†ã«ã™ã‚‹ã€‚
 */

@@ -1,3 +1,14 @@
+ï»¿/*
+Project Name    : ColorVisionCorrection
+File Name		: FileSearchCreate.hpp
+Creation Date   : 2018/07/13
+
+Copyright Â© 2018 yutateno. All rights reserved.
+
+This source code or any portion thereof must not be
+reproduced or used in any manner whatsoever.
+*/
+
 #pragma once
 #include <string>
 #include <vector>
@@ -5,12 +16,12 @@
 class FileSearchCreate
 {
 private:
-	char Path[MAX_PATH + 1];	// Àsƒtƒ@ƒCƒ‹‚ÌŠ®‘SƒpƒX‚ğæ“¾‚·‚é•Ï”
+	//char Path[MAX_PATH + 1];	// å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã®å®Œå…¨ãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹å¤‰æ•°
 
-	char drive[MAX_PATH + 1]	// ƒhƒ‰ƒCƒu
-		, dir[MAX_PATH + 1]		// ƒfƒBƒŒƒNƒgƒŠƒpƒX
-		, fname[MAX_PATH + 1]	// ƒtƒ@ƒCƒ‹–¼
-		, ext[MAX_PATH + 1];	// ƒtƒ@ƒCƒ‹–¼‚ÌŠg’£q
+	//char drive[MAX_PATH + 1]	// ãƒ‰ãƒ©ã‚¤ãƒ–
+	//	, dir[MAX_PATH + 1]		// ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹
+	//	, fname[MAX_PATH + 1]	// ãƒ•ã‚¡ã‚¤ãƒ«å
+	//	, ext[MAX_PATH + 1];	// ãƒ•ã‚¡ã‚¤ãƒ«åã®æ‹¡å¼µå­
 
 	
 
@@ -25,7 +36,7 @@ public:
 };
 
 /*
-‚±‚ÌƒNƒ‰ƒX‚Ípng‚Æjpg‚Æbmp‚ğ’²‚×‚ÄA‚»‚ê‚Ì[~.png]‚Ü‚Å‚ğvector‚Ìstring•Ï”‚É•Û‘¶‚·‚é‚æ‚¤‚É‚·‚éB
-‚ ‚Æ‚Â‚¢‚Å‚É‚»‚Ìpng‚Ì—×‚É[‰æ‘œ–¼+png]‚Æ‚¢‚¤ƒtƒHƒ‹ƒ_‚ğì¬‚·‚éB
-•Û‘¶‚µ‚½‚Ì‚ğColorCorrectionƒNƒ‰ƒX‚É“n‚·B
+ã“ã®ã‚¯ãƒ©ã‚¹ã¯pngã¨jpgã¨bmpã‚’èª¿ã¹ã¦ã€ãã‚Œã®[~.png]ã¾ã§ã‚’vectorã®stringå¤‰æ•°ã«ä¿å­˜ã™ã‚‹ã‚ˆã†ã«ã™ã‚‹ã€‚
+ã‚ã¨ã¤ã„ã§ã«ãã®pngã®éš£ã«[ç”»åƒå+png]ã¨ã„ã†ãƒ•ã‚©ãƒ«ãƒ€ã‚’ä½œæˆã™ã‚‹ã€‚
+ä¿å­˜ã—ãŸã®ã‚’ColorCorrectionã‚¯ãƒ©ã‚¹ã«æ¸¡ã™ã€‚
 */
