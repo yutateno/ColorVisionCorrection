@@ -24,3 +24,8 @@ public:
 	void Update();
 };
 
+/*
+このクラスはpngとjpgとbmpを調べて、それの[~.png]までをvectorのstring変数に保存するようにする。
+あとついでにそのpngの隣に[画像名+png]というフォルダを作成する。
+保存したのをColorCorrectionクラスに渡す。
+*/
