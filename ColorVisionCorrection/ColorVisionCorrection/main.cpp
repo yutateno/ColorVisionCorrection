@@ -1,4 +1,6 @@
 #include "DxLib.h"
+#include "ColorCorrection.hpp"
+#include "FileSearchCreate.hpp"
 
 int XSize = 2048;
 int YSize = 2048;
