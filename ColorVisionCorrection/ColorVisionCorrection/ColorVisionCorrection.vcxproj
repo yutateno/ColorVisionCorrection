@@ -149,14 +149,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ColorCorrection.cpp" />
-    <ClCompile Include="FileSearchCreate.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="mainLabor.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ColorCorrection.hpp" />
-    <ClInclude Include="FileSearchCreate.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
