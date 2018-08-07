@@ -1,4 +1,8 @@
-﻿#include "DxLib.h"
+﻿/*
+透過画像は考慮していません。他プロジェクトとして作る予定です。
+*/
+
+#include "DxLib.h"
 
 int XSize = 2048;
 int YSize = 2048;
@@ -28,7 +32,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	int tmp[3];						// 白黒に生成するためのもので、RGBを一瞬保持するための仮置き
 
-	int handle = LoadSoftImage("ゲームオーバー文字.png");
+	// ここで保存する画像を決める
+	int handle = LoadSoftImage("Media.jpg");
 
 	GetSoftImageSize(handle, &XSize, &YSize);
 
@@ -138,14 +143,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 					{
 						tmp[i] = RGBA[x][y][i];
 					}
-					if (RGBA[x][y][3] == 255)
-					{
-						DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
-					}
+					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
 				}
 			}
 			//DrawFormatString(0, 0, GetColor(255, 255, 255), "通常");
-			if (count == 50) SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\normal.jpg");
+			if (count == 50) 
+			{
+				SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\normal.jpg");			// JPG
+				// SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\normal.bmp");		// BMP
+				// SaveDrawScreenToPNG(0, 0, XSize, YSize, "correction\\normal.png");		// PNG
+			}
 		}
 		else if (count <= 120)
 		{
@@ -157,14 +164,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 					{
 						tmp[i] = DRGB[x][y][i];
 					}
-					if (RGBA[x][y][3] == 255)
-					{
-						DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
-					}
+					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
 				}
 			}
 			//DrawFormatString(0, 0, GetColor(255, 255, 255), "D型色覚");
-			if (count == 100) SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\D.jpg");
+			if (count == 100)
+			{
+				SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\D.jpg");			// JPG
+				// SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\D.bmp");		// BMP
+				// SaveDrawScreenToPNG(0, 0, XSize, YSize, "correction\\D.png");		// PNG
+			}
 		}
 		else if (count <= 180)
 		{
@@ -176,14 +185,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 					{
 						tmp[i] = PRGB[x][y][i];
 					}
-					if (RGBA[x][y][3] == 255)
-					{
-						DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
-					}
+					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
 				}
 			}
 			//DrawFormatString(0, 0, GetColor(255, 255, 255), "P型色覚");
-			if (count == 150) SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\P.jpg");
+			if (count == 150)
+			{
+				SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\P.jpg");			// JPG
+				// SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\P.bmp");		// BMP
+				// SaveDrawScreenToPNG(0, 0, XSize, YSize, "correction\\P.png");		// PNG
+			}
 		}
 		else if (count <= 240)
 		{
@@ -193,14 +204,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 				{
 					tmp[0] = (int)(RGBA[x][y][0] * 0.299 + RGBA[x][y][1] * 0.587 + RGBA[x][y][2] * 0.114);
 					tmp[1] = tmp[2] = tmp[0];
-					if (RGBA[x][y][3] == 255)
-					{
-						DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
-					}
+					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
 				}
 			}
 			//DrawFormatString(0, 0, GetColor(255, 255, 255), "白黒");
-			if (count == 200) SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\whiteblack.jpg");
+			if (count == 200)
+			{
+				SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\whiteblack.jpg");			// JPG
+				// SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\whiteblack.bmp");		// BMP
+				// SaveDrawScreenToPNG(0, 0, XSize, YSize, "correction\\whiteblack.png");		// PNG
+			}
 		}
 		else break;
 	}
