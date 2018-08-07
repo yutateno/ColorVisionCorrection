@@ -28,7 +28,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	int tmp[3];						// 白黒に生成するためのもので、RGBを一瞬保持するための仮置き
 
-	int handle = LoadSoftImage("Media.jpg");
+	int handle = LoadSoftImage("ゲームオーバー文字.png");
 
 	GetSoftImageSize(handle, &XSize, &YSize);
 
@@ -138,7 +138,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 					{
 						tmp[i] = RGBA[x][y][i];
 					}
-					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
+					if (RGBA[x][y][3] == 255)
+					{
+						DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
+					}
 				}
 			}
 			//DrawFormatString(0, 0, GetColor(255, 255, 255), "通常");
@@ -154,7 +157,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 					{
 						tmp[i] = DRGB[x][y][i];
 					}
-					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
+					if (RGBA[x][y][3] == 255)
+					{
+						DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
+					}
 				}
 			}
 			//DrawFormatString(0, 0, GetColor(255, 255, 255), "D型色覚");
@@ -170,7 +176,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 					{
 						tmp[i] = PRGB[x][y][i];
 					}
-					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
+					if (RGBA[x][y][3] == 255)
+					{
+						DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
+					}
 				}
 			}
 			//DrawFormatString(0, 0, GetColor(255, 255, 255), "P型色覚");
@@ -184,7 +193,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 				{
 					tmp[0] = (int)(RGBA[x][y][0] * 0.299 + RGBA[x][y][1] * 0.587 + RGBA[x][y][2] * 0.114);
 					tmp[1] = tmp[2] = tmp[0];
-					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
+					if (RGBA[x][y][3] == 255)
+					{
+						DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
+					}
 				}
 			}
 			//DrawFormatString(0, 0, GetColor(255, 255, 255), "白黒");
