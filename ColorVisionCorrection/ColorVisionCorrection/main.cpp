@@ -4,6 +4,7 @@
 
 #include "DxLib.h"
 
+// 画像の対応する最大サイズ
 int XSize = 2048;
 int YSize = 2048;
 
@@ -19,24 +20,50 @@ int PRGB[2048][2048][3];			// PLMSからRGBに変換したもの
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
-	ChangeWindowMode(TRUE);
-	SetGraphMode(XSize, YSize, 32);
+	ChangeWindowMode(TRUE);					// ウィンドウにする
+	SetGraphMode(XSize, YSize, 32);			// 画面サイズを決める
 
-	DxLib_Init();
+	DxLib_Init();						// 初期化処理
 
-	SetDrawScreen(DX_SCREEN_BACK);
+	SetDrawScreen(DX_SCREEN_BACK);		// 裏描画
 
-	SetFontSize(64);
+	SetAlwaysRunFlag(true);				// 常にアクティブにする
 
-	SetAlwaysRunFlag(true);
+	int monochrome;						// 白黒に生成するためのもので、RGBを一瞬保持するための仮置き
 
-	int tmp[3];						// 白黒に生成するためのもので、RGBを一瞬保持するための仮置き
+	bool jpgExtension = false;			// jpgでは透過できないのでそれの判断
 
-	// ここで保存する画像を決める
-	int handle = LoadSoftImage("Media.jpg");
+	// ここで保存する画像を決める(ちゃんとしたものを作りたいが簡単にする)
+	int normal, handle;
+	normal = LoadGraph("Media.png");
+	handle = LoadSoftImage("Media.png");
+	if (normal == -1)
+	{
+		normal = LoadGraph("Media.jpg");
+		handle = LoadSoftImage("Media.jpg");
+		jpgExtension = true;
+	}
+	if (normal == -1)
+	{
+		normal = LoadGraph("Media.bmp");
+		handle = LoadSoftImage("Media.bmp");
+		jpgExtension = false;
+	}
+	if (normal == -1)
+	{
+		return -1;
+	}
 
-	GetSoftImageSize(handle, &XSize, &YSize);
+	GetSoftImageSize(handle, &XSize, &YSize);			// 画像のサイズを調べる
 
+	// 空の画像をサイズ指定した状態で作る
+	int changeHandle_D = MakeARGB8ColorSoftImage(XSize, YSize);
+	int changeHandle_P = MakeARGB8ColorSoftImage(XSize, YSize);
+	int changeHandle_Mono = MakeARGB8ColorSoftImage(XSize, YSize);
+
+	int completeHandle_D, completeHandle_P, completeHandle_Mono;		// 空の画像から作った画像を渡すもの
+
+	// ピクセルごとの色を得る
 	for (int x = 0; x < XSize; ++x)
 	{
 		for (int y = 0; y < YSize; ++y)
@@ -45,8 +72,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		}
 	}
 
-	DeleteSoftImage(handle);
+	DeleteSoftImage(handle);		// 用がないので削除
 
+	// XYZ色空間を得る
 	for (int x = 0; x < XSize; ++x)
 	{
 		for (int y = 0; y < YSize; ++y)
@@ -57,6 +85,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		}
 	}
 
+	// LMS色空間を得る
 	for (int x = 0; x < XSize; ++x)
 	{
 		for (int y = 0; y < YSize; ++y)
@@ -67,6 +96,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		}
 	}
 
+	// P型異常のLMS色空間を得る
 	for (int x = 0; x < XSize; ++x)
 	{
 		for (int y = 0; y < YSize; ++y)
@@ -77,6 +107,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		}
 	}
 
+	// D型異常のLMS色空間を得る
 	for (int x = 0; x < XSize; ++x)
 	{
 		for (int y = 0; y < YSize; ++y)
@@ -87,6 +118,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		}
 	}
 
+	// P型異常のXYZ色空間を得る
 	for (int x = 0; x < XSize; ++x)
 	{
 		for (int y = 0; y < YSize; ++y)
@@ -97,6 +129,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		}
 	}
 
+	// D型異常のXYZ色空間を得る
 	for (int x = 0; x < XSize; ++x)
 	{
 		for (int y = 0; y < YSize; ++y)
@@ -107,6 +140,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		}
 	}
 
+	// D型異常のRGB色空間を得る
 	for (int x = 0; x < XSize; ++x)
 	{
 		for (int y = 0; y < YSize; ++y)
@@ -114,9 +148,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			DRGB[x][y][0] = (int)(3.2410*DXYZ[x][y][0] + (-1.5374)*DXYZ[x][y][1] + (-0.4986)*DXYZ[x][y][2]);
 			DRGB[x][y][1] = (int)(-0.9692*DXYZ[x][y][0] + 1.8760*DXYZ[x][y][1] + 0.0416*DXYZ[x][y][2]);
 			DRGB[x][y][2] = (int)(0.0556*DXYZ[x][y][0] + (-0.2040)*DXYZ[x][y][1] + 1.0570*DXYZ[x][y][2]);
+
+			DrawPixelSoftImage(changeHandle_D, x, y, DRGB[x][y][0], DRGB[x][y][1], DRGB[x][y][2], -(jpgExtension * -255) + RGBA[x][y][3]);			// 空の画像に色をセットする
 		}
 	}
+	completeHandle_D = CreateGraphFromSoftImage(changeHandle_D);			// Softimageからグラフィックハンドルを作成する
+	DeleteSoftImage(changeHandle_D);			// いらなくなったので削除
 
+	// P型異常のRGB色空間を得る
 	for (int x = 0; x < XSize; ++x)
 	{
 		for (int y = 0; y < YSize; ++y)
@@ -124,100 +163,88 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			PRGB[x][y][0] = (int)(3.2410*PXYZ[x][y][0] + (-1.5374)*PXYZ[x][y][1] + (-0.4986)*PXYZ[x][y][2]);
 			PRGB[x][y][1] = (int)(-0.9692*PXYZ[x][y][0] + 1.8760*PXYZ[x][y][1] + 0.0416*PXYZ[x][y][2]);
 			PRGB[x][y][2] = (int)(0.0556*PXYZ[x][y][0] + (-0.2040)*PXYZ[x][y][1] + 1.0570*PXYZ[x][y][2]);
+
+			DrawPixelSoftImage(changeHandle_P, x, y, PRGB[x][y][0], PRGB[x][y][1], PRGB[x][y][2], -(jpgExtension * -255) + RGBA[x][y][3]);			// 空の画像に色をセットする
 		}
 	}
+	completeHandle_P = CreateGraphFromSoftImage(changeHandle_P);			// Softimageからグラフィックハンドルを作成する
+	DeleteSoftImage(changeHandle_P);			// いらなくなったので削除
 
-	int count = 0;
+	// 白黒画像を得る
+	for (int x = 0; x < XSize; ++x)
+	{
+		for (int y = 0; y < YSize; ++y)
+		{
+			monochrome = (int)(RGBA[x][y][0] * 0.299 + RGBA[x][y][1] * 0.587 + RGBA[x][y][2] * 0.114);
 
+			DrawPixelSoftImage(changeHandle_Mono, x, y, monochrome, monochrome, monochrome, -(jpgExtension * -255) + RGBA[x][y][3]);			// 空の画像に色をセットする
+		}
+	}
+	completeHandle_Mono = CreateGraphFromSoftImage(changeHandle_Mono);			// Softimageからグラフィックハンドルを作成する
+	DeleteSoftImage(changeHandle_Mono);			// いらなくなったので削除
+
+	int count = 0;			// 描画して確認するなどの一連の動作を時間で行うための変数
+
+	// 本編
 	while (ScreenFlip() == 0 && ProcessMessage() == 0 && ClearDrawScreen() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) != 1)
 	{
-		count++;
-		// 通常
+		count++;		// 加算する
+
+		// 通常画像
 		if (count <= 60)
 		{
-			for (int x = 0; x < XSize; ++x)
-			{
-				for (int y = 0; y < YSize; ++y)
-				{
-					for (int i = 0; i < 3; ++i)
-					{
-						tmp[i] = RGBA[x][y][i];
-					}
-					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
-				}
-			}
-			//DrawFormatString(0, 0, GetColor(255, 255, 255), "通常");
-			if (count == 50) 
+			DrawGraph(0, 0, normal, true);		// 表示
+			// 保存
+			if (count == 60) 
 			{
 				SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\normal.jpg");			// JPG
-				// SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\normal.bmp");		// BMP
-				// SaveDrawScreenToPNG(0, 0, XSize, YSize, "correction\\normal.png");		// PNG
+				SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\normal.bmp");		// BMP
+				SaveDrawScreenToPNG(0, 0, XSize, YSize, "correction\\normal.png");		// PNG
 			}
 		}
+		// D型色覚画像
 		else if (count <= 120)
 		{
-			for (int x = 0; x < XSize; ++x)
+			DrawGraph(0, 0, completeHandle_D, true);		// 表示
+			// 保存
+			if (count == 120)
 			{
-				for (int y = 0; y < YSize; ++y)
-				{
-					for (int i = 0; i < 3; ++i)
-					{
-						tmp[i] = DRGB[x][y][i];
-					}
-					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
-				}
-			}
-			//DrawFormatString(0, 0, GetColor(255, 255, 255), "D型色覚");
-			if (count == 100)
-			{
-				SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\D.jpg");			// JPG
-				// SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\D.bmp");		// BMP
-				// SaveDrawScreenToPNG(0, 0, XSize, YSize, "correction\\D.png");		// PNG
+				SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\D.jpg");		// JPG
+				SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\D.bmp");		// BMP
+				SaveDrawScreenToPNG(0, 0, XSize, YSize, "correction\\D.png");		// PNG
 			}
 		}
+		// P型色覚画像
 		else if (count <= 180)
 		{
-			for (int x = 0; x < XSize; ++x)
-			{
-				for (int y = 0; y < YSize; ++y)
-				{
-					for (int i = 0; i < 3; ++i)
-					{
-						tmp[i] = PRGB[x][y][i];
-					}
-					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
-				}
-			}
-			//DrawFormatString(0, 0, GetColor(255, 255, 255), "P型色覚");
-			if (count == 150)
+			DrawGraph(0, 0, completeHandle_P, true);		// 表示
+			// 保存
+			if (count == 180)
 			{
 				SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\P.jpg");			// JPG
-				// SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\P.bmp");		// BMP
-				// SaveDrawScreenToPNG(0, 0, XSize, YSize, "correction\\P.png");		// PNG
+				SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\P.bmp");		// BMP
+				SaveDrawScreenToPNG(0, 0, XSize, YSize, "correction\\P.png");		// PNG
 			}
 		}
+		// 白黒画像
 		else if (count <= 240)
 		{
-			for (int x = 0; x < XSize; ++x)
-			{
-				for (int y = 0; y < YSize; ++y)
-				{
-					tmp[0] = (int)(RGBA[x][y][0] * 0.299 + RGBA[x][y][1] * 0.587 + RGBA[x][y][2] * 0.114);
-					tmp[1] = tmp[2] = tmp[0];
-					DrawPixel(x, y, GetColor(tmp[0], tmp[1], tmp[2]));
-				}
-			}
-			//DrawFormatString(0, 0, GetColor(255, 255, 255), "白黒");
-			if (count == 200)
+			DrawGraph(0, 0, completeHandle_Mono, true);		// 表示
+			// 保存
+			if (count == 240)
 			{
 				SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\whiteblack.jpg");			// JPG
-				// SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\whiteblack.bmp");		// BMP
-				// SaveDrawScreenToPNG(0, 0, XSize, YSize, "correction\\whiteblack.png");		// PNG
+				SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\whiteblack.bmp");		// BMP
+				SaveDrawScreenToPNG(0, 0, XSize, YSize, "correction\\whiteblack.png");		// PNG
 			}
 		}
 		else break;
 	}
-
+	DeleteGraph(completeHandle_Mono);
+	DeleteGraph(completeHandle_P);
+	DeleteGraph(completeHandle_D);
+	DeleteGraph(normal);
+	
 	DxLib_End();
 	return 0;
 }
