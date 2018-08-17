@@ -32,27 +32,82 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	int monochrome;						// 白黒に生成するためのもので、RGBを一瞬保持するための仮置き
 
 	bool jpgExtension = false;			// jpgでは透過できないのでそれの判断
+	
+	int handle, normal = -1;
 
-	// ここで保存する画像を決める(ちゃんとしたものを作りたいが簡単にする)
-	int normal, handle;
-	normal = LoadGraph("Media.png");
-	handle = LoadSoftImage("Media.png");
-	if (normal == -1)
+	// 画像のドラッグアンドドロップで起動していないとき
+	if (__argc == 1)
 	{
-		normal = LoadGraph("Media.jpg");
-		handle = LoadSoftImage("Media.jpg");
-		jpgExtension = true;
+		// ここで保存する画像を決める(ちゃんとしたものを作りたいが簡単にする)
+		normal = LoadGraph("Media.png");
+		handle = LoadSoftImage("Media.png");
+		if (normal == -1)
+		{
+			normal = LoadGraph("Media.jpg");
+			handle = LoadSoftImage("Media.jpg");
+			jpgExtension = true;
+		}
+		if (normal == -1)
+		{
+			normal = LoadGraph("Media.bmp");
+			handle = LoadSoftImage("Media.bmp");
+			jpgExtension = true;
+		}
+		if (normal == -1)
+		{
+			return -1;
+		}
 	}
-	if (normal == -1)
+	else
 	{
-		normal = LoadGraph("Media.bmp");
-		handle = LoadSoftImage("Media.bmp");
-		jpgExtension = false;
+		// ここで保存する画像を決める(ちゃんとしたものを作りたいが簡単にする)
+
+		const char *mediaFile = NULL;
+		const char *dragFile = __argv[1];
+		int ch = '\\';
+		mediaFile = strrchr(dragFile, ch) + 1;
+
+		const char *Pexe = NULL;
+		Pexe = strstr(mediaFile, "png");
+		if (Pexe != NULL)
+		{
+			normal = LoadGraph(mediaFile);
+			handle = LoadSoftImage(mediaFile);
+			Pexe = NULL;
+		}
+		if (normal == -1)
+		{
+			const char *Jexe = NULL;
+			Jexe = strstr(mediaFile, "jpg");
+			if (Jexe != NULL)
+			{
+				normal = LoadGraph(mediaFile);
+				handle = LoadSoftImage(mediaFile);
+				jpgExtension = true;
+				Jexe = NULL;
+			}
+		}
+		if (normal == -1)
+		{
+			const char *Bexe = NULL;
+			Bexe = strstr(mediaFile, "bmp");
+			if (Bexe != NULL)
+			{
+				normal = LoadGraph(mediaFile);
+				handle = LoadSoftImage(mediaFile);
+				jpgExtension = true;
+				Bexe = NULL;
+			}
+		}
+		if (normal == -1)
+		{
+			return -1;
+		}
+		dragFile = NULL;
+		mediaFile = NULL;
 	}
-	if (normal == -1)
-	{
-		return -1;
-	}
+
+	
 
 	GetSoftImageSize(handle, &XSize, &YSize);			// 画像のサイズを調べる
 
