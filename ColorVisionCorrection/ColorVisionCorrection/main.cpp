@@ -1,22 +1,37 @@
-﻿/*
-透過画像は考慮していません。他プロジェクトとして作る予定です。
-*/
-
-#include "DxLib.h"
+﻿#include "DxLib.h"
 
 // 画像の対応する最大サイズ
 int XSize = 2048;
 int YSize = 2048;
 
-int RGBA[2048][2048][4];			// 元なるRGBをピクセル単位で取得
-double XYZ[2048][2048][3];		// RGBからXYZに変換したもの
-double PXYZ[2048][2048][3];		// LMSから直接P型異常のXYZに変換
-double DXYZ[2048][2048][3];		// LMSから直接D型異常のXYZに変換
-double LMS[2048][2048][3];		// XYZからLMSに変換したもの
-double PLMS[2048][2048][3];		// LMSからP型異常に変換したもの
-double DLMS[2048][2048][3];		// LMSからD型異常に変換したもの
-int DRGB[2048][2048][3];			// DXYZからRGBに変換したもの
-int PRGB[2048][2048][3];			// PLMSからRGBに変換したもの
+
+// 元なるRGBをピクセル単位で取得
+int RGBA[2048][2048][4];
+
+// RGBからXYZに変換したもの
+double XYZ[2048][2048][3];
+
+// LMSから直接P型異常のXYZに変換
+double PXYZ[2048][2048][3];
+
+// LMSから直接D型異常のXYZに変換
+double DXYZ[2048][2048][3];
+
+// XYZからLMSに変換したもの
+double LMS[2048][2048][3];
+
+// LMSからP型異常に変換したもの
+double PLMS[2048][2048][3];
+
+// LMSからD型異常に変換したもの
+double DLMS[2048][2048][3];
+
+// DXYZからRGBに変換したもの
+int DRGB[2048][2048][3];
+
+// PLMSからRGBに変換したもの
+int PRGB[2048][2048][3];
+
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
@@ -33,31 +48,41 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	bool jpgExtension = false;			// jpgでは透過できないのでそれの判断
 	
-	int handle, normal = -1;
+	int handle = -1;
+	int normal = -1;
+
 
 	// 画像のドラッグアンドドロップで起動していないとき
 	if (__argc == 1)
 	{
-		// ここで保存する画像を決める(ちゃんとしたものを作りたいが簡単にする)
+		// ここで保存する画像を決める(拡張子探索にしてもいいが楽したいので簡単にする)
+		// pngでロードする
 		normal = LoadGraph("Media.png");
 		handle = LoadSoftImage("Media.png");
+
+		// 失敗したのでjpgでロードする
 		if (normal == -1)
 		{
 			normal = LoadGraph("Media.jpg");
 			handle = LoadSoftImage("Media.jpg");
 			jpgExtension = true;
 		}
+
+		// 失敗したのでbmpでロードする
 		if (normal == -1)
 		{
 			normal = LoadGraph("Media.bmp");
 			handle = LoadSoftImage("Media.bmp");
 			jpgExtension = true;
 		}
+
+		// エラー終了
 		if (normal == -1)
 		{
 			return -1;
 		}
 	}
+	// ドラッグアンドドロップで起動したとき
 	else
 	{
 		// ここで保存する画像を決める(ちゃんとしたものを作りたいが簡単にする)
@@ -68,41 +93,51 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		mediaFile = strrchr(dragFile, ch) + 1;
 
 		const char *Pexe = NULL;
+
+		// pngで探索する
 		Pexe = strstr(mediaFile, "png");
+
+		// ロードする
 		if (Pexe != NULL)
 		{
 			normal = LoadGraph(mediaFile);
 			handle = LoadSoftImage(mediaFile);
-			Pexe = NULL;
 		}
-		if (normal == -1)
+		// 探索して見つからなかった
+		else
 		{
-			const char *Jexe = NULL;
-			Jexe = strstr(mediaFile, "jpg");
-			if (Jexe != NULL)
+			// jpgで探索する
+			Pexe = strstr(mediaFile, "jpg");
+
+			// ロードする
+			if (Pexe != NULL)
 			{
 				normal = LoadGraph(mediaFile);
 				handle = LoadSoftImage(mediaFile);
 				jpgExtension = true;
-				Jexe = NULL;
 			}
-		}
-		if (normal == -1)
-		{
-			const char *Bexe = NULL;
-			Bexe = strstr(mediaFile, "bmp");
-			if (Bexe != NULL)
+			// 探索して見つからなかった
+			else
 			{
-				normal = LoadGraph(mediaFile);
-				handle = LoadSoftImage(mediaFile);
-				jpgExtension = true;
-				Bexe = NULL;
+				// bmpで探索する
+				Pexe = strstr(mediaFile, "bmp");
+				
+				// ロードする
+				if (Pexe != NULL)
+				{
+					normal = LoadGraph(mediaFile);
+					handle = LoadSoftImage(mediaFile);
+					jpgExtension = true;
+				}
 			}
 		}
+
+		// ロードできなかったのでエラー終了する
 		if (normal == -1)
 		{
 			return -1;
 		}
+		Pexe = NULL;
 		dragFile = NULL;
 		mediaFile = NULL;
 	}
@@ -118,6 +153,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 	int completeHandle_D, completeHandle_P, completeHandle_Mono;		// 空の画像から作った画像を渡すもの
 
+
 	// ピクセルごとの色を得る
 	for (int x = 0; x < XSize; ++x)
 	{
@@ -128,6 +164,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	}
 
 	DeleteSoftImage(handle);		// 用がないので削除
+
 
 	// XYZ色空間を得る
 	for (int x = 0; x < XSize; ++x)
@@ -140,6 +177,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		}
 	}
 
+
 	// LMS色空間を得る
 	for (int x = 0; x < XSize; ++x)
 	{
@@ -150,6 +188,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			LMS[x][y][2] = (0.0*XYZ[x][y][0] + 0.0*XYZ[x][y][1] + 0.01608*XYZ[x][y][2]);
 		}
 	}
+
 
 	// P型異常のLMS色空間を得る
 	for (int x = 0; x < XSize; ++x)
@@ -162,6 +201,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		}
 	}
 
+
 	// D型異常のLMS色空間を得る
 	for (int x = 0; x < XSize; ++x)
 	{
@@ -172,6 +212,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			DLMS[x][y][2] = (0.0*LMS[x][y][0] + 0.0*LMS[x][y][1] + 1.0*LMS[x][y][2]);
 		}
 	}
+
 
 	// P型異常のXYZ色空間を得る
 	for (int x = 0; x < XSize; ++x)
@@ -184,6 +225,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		}
 	}
 
+
 	// D型異常のXYZ色空間を得る
 	for (int x = 0; x < XSize; ++x)
 	{
@@ -194,6 +236,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			DXYZ[x][y][2] = (0.0*DLMS[x][y][0] + 0.0*DLMS[x][y][1] + 62.189054726368*DLMS[x][y][2]);
 		}
 	}
+
 
 	// D型異常のRGB色空間を得る
 	for (int x = 0; x < XSize; ++x)
@@ -210,6 +253,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	completeHandle_D = CreateGraphFromSoftImage(changeHandle_D);			// Softimageからグラフィックハンドルを作成する
 	DeleteSoftImage(changeHandle_D);			// いらなくなったので削除
 
+
 	// P型異常のRGB色空間を得る
 	for (int x = 0; x < XSize; ++x)
 	{
@@ -225,6 +269,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	completeHandle_P = CreateGraphFromSoftImage(changeHandle_P);			// Softimageからグラフィックハンドルを作成する
 	DeleteSoftImage(changeHandle_P);			// いらなくなったので削除
 
+
 	// 白黒画像を得る
 	for (int x = 0; x < XSize; ++x)
 	{
@@ -238,6 +283,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	completeHandle_Mono = CreateGraphFromSoftImage(changeHandle_Mono);			// Softimageからグラフィックハンドルを作成する
 	DeleteSoftImage(changeHandle_Mono);			// いらなくなったので削除
 
+
 	int count = 0;			// 描画して確認するなどの一連の動作を時間で行うための変数
 
 	// 本編
@@ -246,11 +292,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 		count++;		// 加算する
 
 		// 通常画像
-		if (count <= 60)
+		if (count <= 20)
 		{
 			DrawGraph(0, 0, normal, true);		// 表示
 			// 保存
-			if (count == 60) 
+			if (count == 20) 
 			{
 				SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\normal.jpg");			// JPG
 				SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\normal.bmp");		// BMP
@@ -258,11 +304,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			}
 		}
 		// D型色覚画像
-		else if (count <= 120)
+		else if (count <= 40)
 		{
 			DrawGraph(0, 0, completeHandle_D, true);		// 表示
 			// 保存
-			if (count == 120)
+			if (count == 40)
 			{
 				SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\D.jpg");		// JPG
 				SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\D.bmp");		// BMP
@@ -270,11 +316,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			}
 		}
 		// P型色覚画像
-		else if (count <= 180)
+		else if (count <= 60)
 		{
 			DrawGraph(0, 0, completeHandle_P, true);		// 表示
 			// 保存
-			if (count == 180)
+			if (count == 60)
 			{
 				SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\P.jpg");			// JPG
 				SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\P.bmp");		// BMP
@@ -282,11 +328,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 			}
 		}
 		// 白黒画像
-		else if (count <= 240)
+		else if (count <= 80)
 		{
 			DrawGraph(0, 0, completeHandle_Mono, true);		// 表示
 			// 保存
-			if (count == 240)
+			if (count == 80)
 			{
 				SaveDrawScreenToJPEG(0, 0, XSize, YSize, "correction\\whiteblack.jpg");			// JPG
 				SaveDrawScreenToBMP(0, 0, XSize, YSize, "correction\\whiteblack.bmp");		// BMP
